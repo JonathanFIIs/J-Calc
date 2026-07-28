@@ -9,14 +9,10 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/2910/2910312.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "https://cdn-icons-png.flaticon.com/512/2910/2910312.png",
+      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'><rect width='512' height='512' rx='128' fill='%23f59e0b'/><path fill='%230f172a' d='M112 384h288c13.3 0 24-10.7 24-24s-10.7-24-24-24H160V128c0-13.3-10.7-24-24-24s-24 10.7-24 24v232c0 13.3 10.7 24 24 24zm70.6-118.6c-9.4 9.4-9.4 24.6 0 33.9 9.4 9.4 24.6 9.4 33.9 0l57.4-57.4 41.4 41.4c9.4 9.4 24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9-9.4-9.4-24.6-9.4-33.9 0l-63 63-41.4-41.4c-9.4-9.4-24.6-9.4-33.9 0l-74.3 74.4z'/></svg>",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ]
 }

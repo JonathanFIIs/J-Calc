@@ -214,12 +214,14 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      transition: border-color 0.2s;
+      transition: border-color 0.2s, transform 0.15s ease;
       box-shadow: var(--shadow);
+      cursor: pointer; /* Indica interatividade ao clicar no card */
     }
 
     .calc-card:hover {
       border-color: var(--accent-yellow);
+      transform: translateY(-2px);
     }
 
     .calc-card-header {
@@ -1192,7 +1194,7 @@
       showSavedView();
     }
 
-    // Update existing calculation (Edit title and description)
+    // Update existing calculation
     function handleUpdateCalculation(e) {
       e.preventDefault();
       const id = document.getElementById('input-edit-id').value;
@@ -1210,7 +1212,7 @@
       closeEditModal();
     }
 
-    // Render Saved Cards
+    // Render Saved Cards (Com clique direto no card para visualizar)
     function renderSavedCards() {
       const container = document.getElementById('saved-grid');
       container.innerHTML = '';
@@ -1232,6 +1234,9 @@
       savedCalculations.forEach(item => {
         const card = document.createElement('div');
         card.className = 'calc-card';
+        // Ação de abrir a visualização ao clicar em qualquer lugar do card
+        card.onclick = () => viewSavedCalculation(item.id);
+
         card.innerHTML = `
           <div>
             <div class="calc-card-header">
@@ -1252,14 +1257,11 @@
           </div>
 
           <div class="calc-card-actions">
-            <button class="btn btn-outline" onclick="openEditModal('${item.id}')" title="Editar Título e Legenda">
+            <button class="btn btn-outline" onclick="event.stopPropagation(); openEditModal('${item.id}')" title="Editar Título e Legenda">
               <i class="fa-solid fa-pen-to-square"></i>
             </button>
-            <button class="btn btn-danger" onclick="deleteCalculation('${item.id}')" title="Excluir">
+            <button class="btn btn-danger" onclick="event.stopPropagation(); deleteCalculation('${item.id}')" title="Excluir">
               <i class="fa-solid fa-trash"></i>
-            </button>
-            <button class="btn btn-secondary" onclick="viewSavedCalculation('${item.id}')">
-              <i class="fa-solid fa-eye"></i> Visualizar
             </button>
           </div>
         `;
