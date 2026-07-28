@@ -3,11 +3,20 @@
   "short_name": "J-Calc",
   "description": "Simulador e dashboard de investimentos com juros compostos.",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
   "orientation": "portrait-primary",
+  "categories": ["finance", "utilities"],
+  "prefer_related_applications": false,
   "icons": [
+    {
+      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='192' height='192' viewBox='0 0 512 512'><rect width='512' height='512' rx='110' fill='%23f59e0b'/><path fill='%230f172a' d='M120 376h272c13.3 0 24-10.7 24-24s-10.7-24-24-24H168V136c0-13.3-10.7-24-24-24s-24 10.7-24 24v216c0 13.3 10.7 24 24 24zm64-104c-9.4 9.4-9.4 24.6 0 33.9 9.4 9.4 24.6 9.4 33.9 0l54.1-54.1 39.1 39.1c9.4 9.4 24.6 9.4 33.9 0l72-72c9.4-9.4 9.4-24.6 0-33.9-9.4-9.4-24.6-9.4-33.9 0l-55 55-39.1-39.1c-9.4-9.4-24.6-9.4-33.9 0l-71.1 71.1z'/></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
     {
       "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'><rect width='512' height='512' rx='110' fill='%23f59e0b'/><path fill='%230f172a' d='M120 376h272c13.3 0 24-10.7 24-24s-10.7-24-24-24H168V136c0-13.3-10.7-24-24-24s-24 10.7-24 24v216c0 13.3 10.7 24 24 24zm64-104c-9.4 9.4-9.4 24.6 0 33.9 9.4 9.4 24.6 9.4 33.9 0l54.1-54.1 39.1 39.1c9.4 9.4 24.6 9.4 33.9 0l72-72c9.4-9.4 9.4-24.6 0-33.9-9.4-9.4-24.6-9.4-33.9 0l-55 55-39.1-39.1c-9.4-9.4-24.6-9.4-33.9 0l-71.1 71.1z'/></svg>",
       "sizes": "512x512",
