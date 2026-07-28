@@ -6,11 +6,11 @@
   <title>J-Calc - Calculadora de Juros Compostos</title>
   
   <!-- Favicon e Ícones PWA -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'><rect width='512' height='512' rx='110' fill='%23f59e0b'/><path fill='%230f172a' d='M120 376h272c13.3 0 24-10.7 24-24s-10.7-24-24-24H168V136c0-13.3-10.7-24-24-24s-24 10.7-24 24v216c0 13.3 10.7 24 24 24zm64-104c-9.4 9.4-9.4 24.6 0 33.9 9.4 9.4 24.6 9.4 33.9 0l54.1-54.1 39.1 39.1c9.4 9.4 24.6 9.4 33.9 0l72-72c9.4-9.4 9.4-24.6 0-33.9-9.4-9.4-24.6-9.4-33.9 0l-55 55-39.1-39.1c-9.4-9.4-24.6-9.4-33.9 0l-71.1 71.1z'/></svg>">
-  <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'><rect width='512' height='512' rx='110' fill='%23f59e0b'/><path fill='%230f172a' d='M120 376h272c13.3 0 24-10.7 24-24s-10.7-24-24-24H168V136c0-13.3-10.7-24-24-24s-24 10.7-24 24v216c0 13.3 10.7 24 24 24zm64-104c-9.4 9.4-9.4 24.6 0 33.9 9.4 9.4 24.6 9.4 33.9 0l54.1-54.1 39.1 39.1c9.4 9.4 24.6 9.4 33.9 0l72-72c9.4-9.4 9.4-24.6 0-33.9-9.4-9.4-24.6-9.4-33.9 0l-55 55-39.1-39.1c-9.4-9.4-24.6-9.4-33.9 0l-71.1 71.1z'/></svg>">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+  <link rel="apple-touch-icon" href="./icon-512.png">
 
   <!-- Configurações PWA -->
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#0f172a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -57,7 +57,6 @@
       flex-direction: column;
     }
 
-    /* Navbar / Header */
     header {
       background-color: var(--bg-sidebar);
       border-bottom: 1px solid var(--border-color);
@@ -102,7 +101,6 @@
       color: var(--text-muted);
     }
 
-    /* Buttons */
     .btn {
       padding: 0.6rem 1rem;
       border-radius: 8px;
@@ -159,7 +157,6 @@
       background-color: rgba(239, 68, 68, 0.15);
     }
 
-    /* Main Container */
     main {
       flex: 1;
       max-width: 1200px;
@@ -168,7 +165,6 @@
       padding: 1.25rem;
     }
 
-    /* Section Views */
     .view-section {
       display: none;
     }
@@ -183,7 +179,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Dashboard Header */
     .dash-header {
       display: flex;
       justify-content: space-between;
@@ -203,7 +198,6 @@
       font-size: 0.825rem;
     }
 
-    /* Saved Calculations Grid */
     .cards-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -316,7 +310,6 @@
       font-size: 0.85rem;
     }
 
-    /* Results Screen */
     .results-nav {
       display: flex;
       justify-content: space-between;
@@ -401,7 +394,6 @@
       width: 100%;
     }
 
-    /* Table Styles */
     .table-box {
       background-color: var(--bg-card);
       border: 1px solid var(--border-color);
@@ -436,7 +428,6 @@
       border-bottom: none;
     }
 
-    /* Modal Overlay */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -552,7 +543,6 @@
       padding-top: 0.85rem;
     }
 
-    /* Desktop Adjustments for Modal */
     @media (min-width: 640px) {
       main {
         padding: 1.5rem;
@@ -574,7 +564,6 @@
       }
     }
 
-    /* Mobile Specific Optimizations */
     @media (max-width: 639px) {
       header {
         padding: 0.75rem 1rem;
@@ -654,7 +643,6 @@
 </head>
 <body>
 
-  <!-- Header -->
   <header>
     <div class="brand">
       <div class="brand-icon">
@@ -670,10 +658,7 @@
     </button>
   </header>
 
-  <!-- Main Content Area -->
   <main>
-    
-    <!-- VIEW 1: Saved Calculations Screen -->
     <section id="view-saved" class="view-section active">
       <div class="dash-header">
         <div class="dash-title">
@@ -682,12 +667,9 @@
         </div>
       </div>
 
-      <div id="saved-grid" class="cards-grid">
-        <!-- Rendered dynamically -->
-      </div>
+      <div id="saved-grid" class="cards-grid"></div>
     </section>
 
-    <!-- VIEW 2: Calculation Results Screen -->
     <section id="view-results" class="view-section">
       <div class="results-nav">
         <button class="btn btn-outline" onclick="showSavedView()">
@@ -703,7 +685,6 @@
         </div>
       </div>
 
-      <!-- Key Metrics KPIs -->
       <div class="results-kpis">
         <div class="kpi-card kpi-invested">
           <div class="kpi-label">Valor Total Investido</div>
@@ -722,7 +703,6 @@
         </div>
       </div>
 
-      <!-- Stacked Bar Chart -->
       <div class="chart-box">
         <div class="chart-header">
           <div class="chart-title">Evolução Patrimonial ao Longo do Tempo</div>
@@ -732,7 +712,6 @@
         </div>
       </div>
 
-      <!-- Summary Table -->
       <div class="table-box">
         <h3 style="margin-bottom: 0.75rem; font-size: 0.95rem;">Detalhamento Período a Período</h3>
         <table>
@@ -744,16 +723,12 @@
               <th>Total Acumulado</th>
             </tr>
           </thead>
-          <tbody id="res-table-body">
-            <!-- Rendered dynamically -->
-          </tbody>
+          <tbody id="res-table-body"></tbody>
         </table>
       </div>
     </section>
-
   </main>
 
-  <!-- MODAL 1: New Calculation -->
   <div id="modal-calc" class="modal-overlay" onclick="handleOverlayClick(event, 'modal-calc')">
     <div class="modal">
       <div class="modal-header">
@@ -802,7 +777,6 @@
     </div>
   </div>
 
-  <!-- MODAL 2: Save Calculation -->
   <div id="modal-save" class="modal-overlay" onclick="handleOverlayClick(event, 'modal-save')">
     <div class="modal">
       <div class="modal-header">
@@ -828,7 +802,6 @@
     </div>
   </div>
 
-  <!-- MODAL 3: Edit Saved Calculation -->
   <div id="modal-edit" class="modal-overlay" onclick="handleOverlayClick(event, 'modal-edit')">
     <div class="modal">
       <div class="modal-header">
@@ -856,17 +829,14 @@
   </div>
 
   <script>
-    // System State
     let currentCalculation = null;
     let chartInstance = null;
     let savedCalculations = [];
 
-    // Currency Formatter
     const formatBRL = (val) => {
       return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
     };
 
-    // Initialize App & PWA Service Worker
     window.addEventListener('DOMContentLoaded', () => {
       loadSavedCalculations();
       renderSavedCards();
@@ -878,7 +848,6 @@
       }
     });
 
-    // Local Storage Operations
     function loadSavedCalculations() {
       const stored = localStorage.getItem('jcalc_saved');
       if (stored) {
@@ -910,7 +879,6 @@
       ];
     }
 
-    // Navigation & Views
     function showSavedView() {
       document.getElementById('view-results').classList.remove('active');
       document.getElementById('view-saved').classList.add('active');
@@ -922,7 +890,6 @@
       document.getElementById('view-results').classList.add('active');
     }
 
-    // Modal Controls
     function openCalcModal() {
       document.getElementById('modal-calc').classList.add('active');
     }
@@ -961,7 +928,6 @@
       }
     }
 
-    // Math Core Engine
     function calculateCompoundInterest(vInicial, aporteMensal, taxaJuros, tipoTaxa, periodo, tipoPeriodo) {
       let totalMeses = 0;
       if (tipoPeriodo === 'anos') totalMeses = Math.round(periodo * 12);
@@ -1011,7 +977,6 @@
       };
     }
 
-    // Form Submission: Perform Calculation
     function handleCalculate(e) {
       e.preventDefault();
       const vInicial = parseFloat(document.getElementById('input-v-inicial').value) || 0;
@@ -1033,7 +998,6 @@
       showResultsView();
     }
 
-    // Render Results Screen & Chart
     function renderResultsView(calcData) {
       const { results, inputs } = calcData;
 
@@ -1048,7 +1012,6 @@
       renderTable(results.history, results.totalMeses);
     }
 
-    // Render Stacked Bar Chart com Tooltip Unificado
     function renderChart(history, totalMeses) {
       const ctx = document.getElementById('stackedChart').getContext('2d');
 
@@ -1171,7 +1134,6 @@
       });
     }
 
-    // Save calculation to local storage
     function handleSaveCalculation(e) {
       e.preventDefault();
       if (!currentCalculation) return;
@@ -1198,7 +1160,6 @@
       showSavedView();
     }
 
-    // Update existing calculation
     function handleUpdateCalculation(e) {
       e.preventDefault();
       const id = document.getElementById('input-edit-id').value;
@@ -1216,7 +1177,6 @@
       closeEditModal();
     }
 
-    // Render Saved Cards
     function renderSavedCards() {
       const container = document.getElementById('saved-grid');
       container.innerHTML = '';
