@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>J-Calc - Calculadora de Juros Compostos</title>
   
+  <!-- Favicon e Ícones PWA -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'><rect width='512' height='512' rx='110' fill='%23f59e0b'/><path fill='%230f172a' d='M120 376h272c13.3 0 24-10.7 24-24s-10.7-24-24-24H168V136c0-13.3-10.7-24-24-24s-24 10.7-24 24v216c0 13.3 10.7 24 24 24zm64-104c-9.4 9.4-9.4 24.6 0 33.9 9.4 9.4 24.6 9.4 33.9 0l54.1-54.1 39.1 39.1c9.4 9.4 24.6 9.4 33.9 0l72-72c9.4-9.4 9.4-24.6 0-33.9-9.4-9.4-24.6-9.4-33.9 0l-55 55-39.1-39.1c-9.4-9.4-24.6-9.4-33.9 0l-71.1 71.1z'/></svg>">
+  <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'><rect width='512' height='512' rx='110' fill='%23f59e0b'/><path fill='%230f172a' d='M120 376h272c13.3 0 24-10.7 24-24s-10.7-24-24-24H168V136c0-13.3-10.7-24-24-24s-24 10.7-24 24v216c0 13.3 10.7 24 24 24zm64-104c-9.4 9.4-9.4 24.6 0 33.9 9.4 9.4 24.6 9.4 33.9 0l54.1-54.1 39.1 39.1c9.4 9.4 24.6 9.4 33.9 0l72-72c9.4-9.4 9.4-24.6 0-33.9-9.4-9.4-24.6-9.4-33.9 0l-55 55-39.1-39.1c-9.4-9.4-24.6-9.4-33.9 0l-71.1 71.1z'/></svg>">
+
   <!-- Configurações PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0f172a">
@@ -216,7 +220,7 @@
       justify-content: space-between;
       transition: border-color 0.2s, transform 0.15s ease;
       box-shadow: var(--shadow);
-      cursor: pointer; /* Indica interatividade ao clicar no card */
+      cursor: pointer;
     }
 
     .calc-card:hover {
@@ -1212,7 +1216,7 @@
       closeEditModal();
     }
 
-    // Render Saved Cards (Com clique direto no card para visualizar)
+    // Render Saved Cards
     function renderSavedCards() {
       const container = document.getElementById('saved-grid');
       container.innerHTML = '';
@@ -1234,7 +1238,6 @@
       savedCalculations.forEach(item => {
         const card = document.createElement('div');
         card.className = 'calc-card';
-        // Ação de abrir a visualização ao clicar em qualquer lugar do card
         card.onclick = () => viewSavedCalculation(item.id);
 
         card.innerHTML = `
