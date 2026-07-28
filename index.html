@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>J-Calc - Calculadora de Juros Compostos</title>
+  
+  <!-- Configurações PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="J-Calc">
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Google Fonts & FontAwesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --bg-body: #0f172a;
+      --bg-sidebar: #1e293b;
+      --bg-card: #1e293b;
+      --bg-card-hover: #334155;
+      --border-color: #334155;
+      --accent-yellow: #f59e0b;
+      --accent-yellow-hover: #d97706;
+      --accent-green: #10b981;
+      --accent-blue: #3b82f6;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --danger: #ef4444;
+      --radius: 12px;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Navbar / Header */
+    header {
+      background-color: var(--bg-sidebar);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      background: var(--accent-yellow);
+      color: #0f172a;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .brand-text h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.2;
+    }
+
+    .brand-text p {
+      font-size: 0.725rem;
+      color: var(--text-muted);
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background-color: var(--accent-yellow);
+      color: #0f172a;
+    }
+
+    .btn-primary:active {
+      background-color: var(--accent-yellow-hover);
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      background-color: #334155;
+      color: var(--text-main);
+    }
+
+    .btn-secondary:active {
+      background-color: #475569;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+    }
+
+    .btn-outline:active {
+      background-color: var(--bg-card-hover);
+      color: var(--text-main);
+    }
+
+    .btn-danger {
+      background-color: transparent;
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      padding: 0.5rem 0.75rem;
+    }
+
+    .btn-danger:active {
+      background-color: rgba(239, 68, 68, 0.15);
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.25rem;
+    }
+
+    /* Section Views */
+    .view-section {
+      display: none;
+    }
+
+    .view-section.active {
+      display: block;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Dashboard Header */
+    .dash-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .dash-title h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+
+    .dash-title p {
+      color: var(--text-muted);
+      font-size: 0.825rem;
+    }
+
+    /* Saved Calculations Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    .calc-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 1rem 1.15rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: border-color 0.2s;
+      box-shadow: var(--shadow);
+    }
+
+    .calc-card:hover {
+      border-color: var(--accent-yellow);
+    }
+
+    .calc-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.85rem;
+    }
+
+    .calc-card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-main);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding-right: 0.5rem;
+    }
+
+    .calc-card-date {
+      font-size: 0.725rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .calc-card-stats {
+      background-color: rgba(15, 23, 42, 0.6);
+      border-radius: 8px;
+      padding: 0.65rem 0.85rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-label {
+      font-size: 0.675rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-val {
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .stat-val.highlight {
+      color: var(--accent-yellow);
+    }
+
+    .calc-card-actions {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: flex-end;
+      border-top: 1px solid var(--border-color);
+      padding-top: 0.65rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      background: var(--bg-card);
+      border: 2px dashed var(--border-color);
+      border-radius: var(--radius);
+      grid-column: 1 / -1;
+    }
+
+    .empty-state i {
+      font-size: 2.5rem;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .empty-state h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .empty-state p {
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+      font-size: 0.85rem;
+    }
+
+    /* Results Screen */
+    .results-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .results-nav-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      width: auto;
+    }
+
+    .results-kpis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.85rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .kpi-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 1rem 1.15rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+    }
+
+    .kpi-invested::before { background-color: var(--accent-blue); }
+    .kpi-interest::before { background-color: var(--accent-green); }
+    .kpi-total::before { background-color: var(--accent-yellow); }
+
+    .kpi-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 0.2rem;
+    }
+
+    .kpi-value {
+      font-size: 1.45rem;
+      font-weight: 700;
+    }
+
+    .kpi-subtext {
+      font-size: 0.725rem;
+      color: var(--text-muted);
+      margin-top: 0.35rem;
+    }
+
+    .chart-box {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 1.15rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.85rem;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 320px;
+      width: 100%;
+    }
+
+    /* Table Styles */
+    .table-box {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 1rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.825rem;
+      min-width: 480px;
+    }
+
+    th {
+      background-color: rgba(15, 23, 42, 0.6);
+      padding: 0.65rem 0.85rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    td {
+      padding: 0.65rem 0.85rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Modal Overlay */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(4px);
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+      padding: 0;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      width: 100%;
+      max-width: 500px;
+      padding: 1.25rem;
+      box-shadow: var(--shadow);
+      transform: translateY(100%);
+      transition: transform 0.25s ease-out;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-overlay.active .modal {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.65rem;
+    }
+
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .close-modal {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.35rem;
+      cursor: pointer;
+      padding: 0.25rem;
+      line-height: 1;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+      color: var(--text-main);
+    }
+
+    .input-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 0.65rem 0.75rem;
+      background-color: #0f172a;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 75px;
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--accent-yellow);
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+      margin-top: 1.25rem;
+      border-top: 1px solid var(--border-color);
+      padding-top: 0.85rem;
+    }
+
+    /* Desktop Adjustments for Modal */
+    @media (min-width: 640px) {
+      main {
+        padding: 1.5rem;
+      }
+
+      .modal-overlay {
+        align-items: center;
+        padding: 1rem;
+      }
+
+      .modal {
+        border-radius: var(--radius);
+        transform: scale(0.95);
+        transition: transform 0.2s ease, opacity 0.2s ease;
+      }
+
+      .modal-overlay.active .modal {
+        transform: scale(1);
+      }
+    }
+
+    /* Mobile Specific Optimizations */
+    @media (max-width: 639px) {
+      header {
+        padding: 0.75rem 1rem;
+      }
+
+      .brand-text h1 {
+        font-size: 1.05rem;
+      }
+
+      .brand-text p {
+        display: none;
+      }
+
+      .btn-header {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+      }
+
+      .dash-header {
+        margin-bottom: 1rem;
+      }
+
+      .dash-title h2 {
+        font-size: 1.2rem;
+      }
+
+      .results-nav {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .results-nav > .btn-outline {
+        width: 100%;
+      }
+
+      .results-nav-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .results-nav-actions .btn {
+        width: 100%;
+      }
+
+      .results-kpis {
+        grid-template-columns: 1fr;
+        gap: 0.65rem;
+      }
+
+      .kpi-card {
+        padding: 0.85rem 1rem;
+      }
+
+      .kpi-value {
+        font-size: 1.3rem;
+      }
+
+      .chart-box {
+        padding: 0.85rem;
+      }
+
+      .chart-container {
+        height: 250px;
+      }
+
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .calc-card-actions .btn {
+        padding: 0.5rem 0.85rem;
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">
+        <i class="fa-solid fa-chart-line"></i>
+      </div>
+      <div class="brand-text">
+        <h1>J-Calc</h1>
+        <p>Calculadora de Juros Compostos</p>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-header" onclick="openCalcModal()">
+      <i class="fa-solid fa-plus"></i> Novo Cálculo
+    </button>
+  </header>
+
+  <!-- Main Content Area -->
+  <main>
+    
+    <!-- VIEW 1: Saved Calculations Screen -->
+    <section id="view-saved" class="view-section active">
+      <div class="dash-header">
+        <div class="dash-title">
+          <h2>Cálculos Salvos</h2>
+          <p>Seus planejamentos e simulações armazenadas</p>
+        </div>
+      </div>
+
+      <div id="saved-grid" class="cards-grid">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- VIEW 2: Calculation Results Screen -->
+    <section id="view-results" class="view-section">
+      <div class="results-nav">
+        <button class="btn btn-outline" onclick="showSavedView()">
+          <i class="fa-solid fa-arrow-left"></i> Voltar aos Salvos
+        </button>
+        <div class="results-nav-actions">
+          <button class="btn btn-secondary" onclick="openSaveModal()">
+            <i class="fa-solid fa-bookmark"></i> Salvar
+          </button>
+          <button class="btn btn-primary" onclick="openCalcModal()">
+            <i class="fa-solid fa-rotate-right"></i> Novo
+          </button>
+        </div>
+      </div>
+
+      <!-- Key Metrics KPIs -->
+      <div class="results-kpis">
+        <div class="kpi-card kpi-invested">
+          <div class="kpi-label">Valor Total Investido</div>
+          <div class="kpi-value" id="res-total-invested">R$ 0,00</div>
+          <div class="kpi-subtext" id="res-sub-invested">Capital inicial + aportes</div>
+        </div>
+        <div class="kpi-card kpi-interest">
+          <div class="kpi-label">Rendimento em Juros</div>
+          <div class="kpi-value" id="res-total-interest" style="color: var(--accent-green);">R$ 0,00</div>
+          <div class="kpi-subtext" id="res-sub-interest">Ganho acumulado no período</div>
+        </div>
+        <div class="kpi-card kpi-total">
+          <div class="kpi-label">Valor Total Final</div>
+          <div class="kpi-value" id="res-total-final" style="color: var(--accent-yellow);">R$ 0,00</div>
+          <div class="kpi-subtext" id="res-sub-total">Montante acumulado</div>
+        </div>
+      </div>
+
+      <!-- Stacked Bar Chart -->
+      <div class="chart-box">
+        <div class="chart-header">
+          <div class="chart-title">Evolução Patrimonial ao Longo do Tempo</div>
+        </div>
+        <div class="chart-container">
+          <canvas id="stackedChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Summary Table -->
+      <div class="table-box">
+        <h3 style="margin-bottom: 0.75rem; font-size: 0.95rem;">Detalhamento Período a Período</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Período</th>
+              <th>Valor Investido</th>
+              <th>Juros Acumulados</th>
+              <th>Total Acumulado</th>
+            </tr>
+          </thead>
+          <tbody id="res-table-body">
+            <!-- Rendered dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL 1: New Calculation -->
+  <div id="modal-calc" class="modal-overlay" onclick="handleOverlayClick(event, 'modal-calc')">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Novo Cálculo de Juros</div>
+        <button class="close-modal" onclick="closeCalcModal()">&times;</button>
+      </div>
+      <form id="calc-form" onsubmit="handleCalculate(event)">
+        <div class="form-group">
+          <label class="form-label" for="input-v-inicial">Valor Inicial (R$)</label>
+          <input type="number" id="input-v-inicial" class="form-input" placeholder="Ex: 10000" step="any" min="0" inputmode="decimal" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="input-aporte">Aporte Mensal (R$)</label>
+          <input type="number" id="input-aporte" class="form-input" placeholder="Ex: 500" step="any" min="0" inputmode="decimal" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Taxa de Juros</label>
+          <div class="input-group">
+            <input type="number" id="input-taxa" class="form-input" placeholder="Ex: 10" step="any" min="0" inputmode="decimal" required>
+            <select id="select-taxa-tipo" class="form-select" style="max-width: 120px;">
+              <option value="ano">% ao ano</option>
+              <option value="mes">% ao mês</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Período</label>
+          <div class="input-group">
+            <input type="number" id="input-periodo" class="form-input" placeholder="Ex: 10" step="any" min="1" inputmode="numeric" required>
+            <select id="select-periodo-tipo" class="form-select" style="max-width: 120px;">
+              <option value="anos">Anos</option>
+              <option value="meses">Meses</option>
+              <option value="dias">Dias</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeCalcModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Calcular</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Save Calculation -->
+  <div id="modal-save" class="modal-overlay" onclick="handleOverlayClick(event, 'modal-save')">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Salvar Resultado</div>
+        <button class="close-modal" onclick="closeSaveModal()">&times;</button>
+      </div>
+      <form id="save-form" onsubmit="handleSaveCalculation(event)">
+        <div class="form-group">
+          <label class="form-label" for="input-save-title">Título do Cálculo</label>
+          <input type="text" id="input-save-title" class="form-input" placeholder="Ex: Aposentadoria em 10 Anos" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="input-save-desc">Descrição / Observações</label>
+          <textarea id="input-save-desc" class="form-textarea" placeholder="Ex: Planejamento focando no longo prazo com aportes recorrentes..."></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeSaveModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar no Dashboard</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 3: Edit Saved Calculation -->
+  <div id="modal-edit" class="modal-overlay" onclick="handleOverlayClick(event, 'modal-edit')">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Editar Informações</div>
+        <button class="close-modal" onclick="closeEditModal()">&times;</button>
+      </div>
+      <form id="edit-form" onsubmit="handleUpdateCalculation(event)">
+        <input type="hidden" id="input-edit-id">
+        <div class="form-group">
+          <label class="form-label" for="input-edit-title">Título do Cálculo</label>
+          <input type="text" id="input-edit-title" class="form-input" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="input-edit-desc">Descrição / Observações</label>
+          <textarea id="input-edit-desc" class="form-textarea"></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Atualizar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // System State
+    let currentCalculation = null;
+    let chartInstance = null;
+    let savedCalculations = [];
+
+    // Currency Formatter
+    const formatBRL = (val) => {
+      return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+    };
+
+    // Initialize App & PWA Service Worker
+    window.addEventListener('DOMContentLoaded', () => {
+      loadSavedCalculations();
+      renderSavedCards();
+
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js')
+          .then(() => console.log('Service Worker registrado.'))
+          .catch(err => console.log('Erro ao registrar Service Worker:', err));
+      }
+    });
+
+    // Local Storage Operations
+    function loadSavedCalculations() {
+      const stored = localStorage.getItem('jcalc_saved');
+      if (stored) {
+        try {
+          savedCalculations = JSON.parse(stored);
+        } catch (e) {
+          savedCalculations = getDemoData();
+        }
+      } else {
+        savedCalculations = getDemoData();
+        saveToStorage();
+      }
+    }
+
+    function saveToStorage() {
+      localStorage.setItem('jcalc_saved', JSON.stringify(savedCalculations));
+    }
+
+    function getDemoData() {
+      return [
+        {
+          id: 'demo-1',
+          title: 'Aposentadoria 10 Anos',
+          description: 'Estratégia de acumulação de capital no longo prazo.',
+          date: new Date().toLocaleDateString('pt-BR'),
+          inputs: { vInicial: 10000, aporteMensal: 500, taxaJuros: 10, tipoTaxa: 'ano', periodo: 10, tipoPeriodo: 'anos' },
+          results: calculateCompoundInterest(10000, 500, 10, 'ano', 10, 'anos')
+        }
+      ];
+    }
+
+    // Navigation & Views
+    function showSavedView() {
+      document.getElementById('view-results').classList.remove('active');
+      document.getElementById('view-saved').classList.add('active');
+      renderSavedCards();
+    }
+
+    function showResultsView() {
+      document.getElementById('view-saved').classList.remove('active');
+      document.getElementById('view-results').classList.add('active');
+    }
+
+    // Modal Controls
+    function openCalcModal() {
+      document.getElementById('modal-calc').classList.add('active');
+    }
+
+    function closeCalcModal() {
+      document.getElementById('modal-calc').classList.remove('active');
+    }
+
+    function openSaveModal() {
+      if (!currentCalculation) return;
+      document.getElementById('modal-save').classList.add('active');
+    }
+
+    function closeSaveModal() {
+      document.getElementById('modal-save').classList.remove('active');
+    }
+
+    function openEditModal(id) {
+      const found = savedCalculations.find(item => item.id === id);
+      if (!found) return;
+
+      document.getElementById('input-edit-id').value = found.id;
+      document.getElementById('input-edit-title').value = found.title;
+      document.getElementById('input-edit-desc').value = found.description || '';
+
+      document.getElementById('modal-edit').classList.add('active');
+    }
+
+    function closeEditModal() {
+      document.getElementById('modal-edit').classList.remove('active');
+    }
+
+    function handleOverlayClick(event, modalId) {
+      if (event.target.id === modalId) {
+        document.getElementById(modalId).classList.remove('active');
+      }
+    }
+
+    // Math Core Engine
+    function calculateCompoundInterest(vInicial, aporteMensal, taxaJuros, tipoTaxa, periodo, tipoPeriodo) {
+      let totalMeses = 0;
+      if (tipoPeriodo === 'anos') totalMeses = Math.round(periodo * 12);
+      else if (tipoPeriodo === 'meses') totalMeses = Math.round(periodo);
+      else if (tipoPeriodo === 'dias') totalMeses = Math.max(1, Math.round(periodo / 30));
+
+      let taxaMensal = 0;
+      if (tipoTaxa === 'ano') {
+        taxaMensal = Math.pow(1 + (taxaJuros / 100), 1 / 12) - 1;
+      } else {
+        taxaMensal = taxaJuros / 100;
+      }
+
+      let balance = vInicial;
+      let totalInvestido = vInicial;
+      let history = [];
+
+      history.push({
+        label: 'Início',
+        mes: 0,
+        investido: vInicial,
+        juros: 0,
+        total: vInicial
+      });
+
+      for (let m = 1; m <= totalMeses; m++) {
+        let jurosMes = balance * taxaMensal;
+        balance = balance + jurosMes + aporteMensal;
+        totalInvestido += aporteMensal;
+        let totalJuros = balance - totalInvestido;
+
+        history.push({
+          label: `Mês ${m}`,
+          mes: m,
+          investido: Math.round(totalInvestido * 100) / 100,
+          juros: Math.round(totalJuros * 100) / 100,
+          total: Math.round(balance * 100) / 100
+        });
+      }
+
+      return {
+        totalInvestido: totalInvestido,
+        totalJuros: balance - totalInvestido,
+        valorTotal: balance,
+        totalMeses: totalMeses,
+        history: history
+      };
+    }
+
+    // Form Submission: Perform Calculation
+    function handleCalculate(e) {
+      e.preventDefault();
+      const vInicial = parseFloat(document.getElementById('input-v-inicial').value) || 0;
+      const aporteMensal = parseFloat(document.getElementById('input-aporte').value) || 0;
+      const taxaJuros = parseFloat(document.getElementById('input-taxa').value) || 0;
+      const tipoTaxa = document.getElementById('select-taxa-tipo').value;
+      const periodo = parseFloat(document.getElementById('input-periodo').value) || 0;
+      const tipoPeriodo = document.getElementById('select-periodo-tipo').value;
+
+      const results = calculateCompoundInterest(vInicial, aporteMensal, taxaJuros, tipoTaxa, periodo, tipoPeriodo);
+
+      currentCalculation = {
+        inputs: { vInicial, aporteMensal, taxaJuros, tipoTaxa, periodo, tipoPeriodo },
+        results: results
+      };
+
+      closeCalcModal();
+      renderResultsView(currentCalculation);
+      showResultsView();
+    }
+
+    // Render Results Screen & Chart
+    function renderResultsView(calcData) {
+      const { results, inputs } = calcData;
+
+      document.getElementById('res-total-invested').innerText = formatBRL(results.totalInvestido);
+      document.getElementById('res-total-interest').innerText = formatBRL(results.totalJuros);
+      document.getElementById('res-total-final').innerText = formatBRL(results.valorTotal);
+
+      document.getElementById('res-sub-invested').innerText = `Inicial ${formatBRL(inputs.vInicial)} + ${results.totalMeses}x ${formatBRL(inputs.aporteMensal)}`;
+      document.getElementById('res-sub-interest').innerText = `Taxa de ${inputs.taxaJuros}% a. ${inputs.tipoTaxa}`;
+
+      renderChart(results.history, results.totalMeses);
+      renderTable(results.history, results.totalMeses);
+    }
+
+    // Render Stacked Bar Chart com Tooltip Unificado
+    function renderChart(history, totalMeses) {
+      const ctx = document.getElementById('stackedChart').getContext('2d');
+
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
+      let filteredData = [];
+      if (totalMeses <= 24) {
+        filteredData = history;
+      } else {
+        const step = totalMeses <= 120 ? 12 : 24;
+        filteredData = history.filter((item, idx) => idx === 0 || idx % step === 0 || idx === history.length - 1);
+      }
+
+      const labels = filteredData.map(item => item.mes === 0 ? 'Início' : (totalMeses > 24 ? `Ano ${Math.floor(item.mes / 12)}` : `Mês ${item.mes}`));
+      const investedData = filteredData.map(item => item.investido);
+      const interestData = filteredData.map(item => item.juros);
+
+      chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Valor Investido',
+              data: investedData,
+              backgroundColor: '#3b82f6',
+              borderRadius: 4
+            },
+            {
+              label: 'Juros Acumulados',
+              data: interestData,
+              backgroundColor: '#f59e0b',
+              borderRadius: 4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false
+          },
+          plugins: {
+            tooltip: {
+              backgroundColor: '#0f172a',
+              titleColor: '#f8fafc',
+              bodyColor: '#cbd5e1',
+              borderColor: '#334155',
+              borderWidth: 1,
+              padding: 12,
+              displayColors: true,
+              callbacks: {
+                label: function(context) {
+                  let label = context.dataset.label || '';
+                  if (label) label += ': ';
+                  if (context.parsed.y !== null) {
+                    label += formatBRL(context.parsed.y);
+                  }
+                  return label;
+                },
+                footer: function(tooltipItems) {
+                  let total = 0;
+                  tooltipItems.forEach(function(tooltipItem) {
+                    total += tooltipItem.parsed.y;
+                  });
+                  return 'Total: ' + formatBRL(total);
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              stacked: true,
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#94a3b8', font: { size: 10 } }
+            },
+            y: {
+              stacked: true,
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { 
+                color: '#94a3b8',
+                font: { size: 10 },
+                callback: function(value) { 
+                  if (value >= 1000000) return 'R$ ' + (value / 1000000).toFixed(1) + 'M';
+                  if (value >= 1000) return 'R$ ' + (value / 1000).toFixed(0) + 'k';
+                  return 'R$ ' + value; 
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function renderTable(history, totalMeses) {
+      const tbody = document.getElementById('res-table-body');
+      tbody.innerHTML = '';
+
+      let rowsToDisplay = [];
+      if (totalMeses <= 24) {
+        rowsToDisplay = history;
+      } else {
+        const step = 12;
+        rowsToDisplay = history.filter((item, idx) => idx === 0 || idx % step === 0 || idx === history.length - 1);
+      }
+
+      rowsToDisplay.forEach(item => {
+        const tr = document.createElement('tr');
+        const periodText = item.mes === 0 ? 'Início' : `Mês ${item.mes} (${(item.mes / 12).toFixed(1)}a)`;
+        tr.innerHTML = `
+          <td><strong>${periodText}</strong></td>
+          <td>${formatBRL(item.investido)}</td>
+          <td style="color: var(--accent-green);">${formatBRL(item.juros)}</td>
+          <td style="color: var(--accent-yellow); font-weight: 600;">${formatBRL(item.total)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Save calculation to local storage
+    function handleSaveCalculation(e) {
+      e.preventDefault();
+      if (!currentCalculation) return;
+
+      const title = document.getElementById('input-save-title').value.trim();
+      const desc = document.getElementById('input-save-desc').value.trim();
+
+      const newItem = {
+        id: 'calc-' + Date.now(),
+        title: title || 'Cálculo Sem Título',
+        description: desc || '',
+        date: new Date().toLocaleDateString('pt-BR'),
+        inputs: currentCalculation.inputs,
+        results: currentCalculation.results
+      };
+
+      savedCalculations.unshift(newItem);
+      saveToStorage();
+
+      document.getElementById('input-save-title').value = '';
+      document.getElementById('input-save-desc').value = '';
+      closeSaveModal();
+
+      showSavedView();
+    }
+
+    // Update existing calculation (Edit title and description)
+    function handleUpdateCalculation(e) {
+      e.preventDefault();
+      const id = document.getElementById('input-edit-id').value;
+      const title = document.getElementById('input-edit-title').value.trim();
+      const desc = document.getElementById('input-edit-desc').value.trim();
+
+      const index = savedCalculations.findIndex(item => item.id === id);
+      if (index !== -1) {
+        savedCalculations[index].title = title || 'Cálculo Sem Título';
+        savedCalculations[index].description = desc;
+        saveToStorage();
+        renderSavedCards();
+      }
+
+      closeEditModal();
+    }
+
+    // Render Saved Cards
+    function renderSavedCards() {
+      const container = document.getElementById('saved-grid');
+      container.innerHTML = '';
+
+      if (savedCalculations.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-solid fa-calculator"></i>
+            <h3>Nenhum cálculo salvo ainda</h3>
+            <p>Faça sua primeira simulação e salve para comparar cenários futuros.</p>
+            <button class="btn btn-primary" onclick="openCalcModal()">
+              <i class="fa-solid fa-plus"></i> Fazer um Cálculo
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      savedCalculations.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'calc-card';
+        card.innerHTML = `
+          <div>
+            <div class="calc-card-header">
+              <div class="calc-card-title" title="${item.title}">${item.title}</div>
+              <span class="calc-card-date">${item.date}</span>
+            </div>
+            
+            <div class="calc-card-stats">
+              <div class="stat-item">
+                <span class="stat-label">Investido</span>
+                <span class="stat-val">${formatBRL(item.results.totalInvestido)}</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Valor Final</span>
+                <span class="stat-val highlight">${formatBRL(item.results.valorTotal)}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="calc-card-actions">
+            <button class="btn btn-outline" onclick="openEditModal('${item.id}')" title="Editar Título e Legenda">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <button class="btn btn-danger" onclick="deleteCalculation('${item.id}')" title="Excluir">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+            <button class="btn btn-secondary" onclick="viewSavedCalculation('${item.id}')">
+              <i class="fa-solid fa-eye"></i> Visualizar
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function viewSavedCalculation(id) {
+      const found = savedCalculations.find(item => item.id === id);
+      if (!found) return;
+      currentCalculation = {
+        inputs: found.inputs,
+        results: found.results
+      };
+      renderResultsView(currentCalculation);
+      showResultsView();
+    }
+
+    function deleteCalculation(id) {
+      if (confirm('Tem certeza que deseja remover este cálculo salvo?')) {
+        savedCalculations = savedCalculations.filter(item => item.id !== id);
+        saveToStorage();
+        renderSavedCards();
+      }
+    }
+  </script>
+</body>
+</html>
